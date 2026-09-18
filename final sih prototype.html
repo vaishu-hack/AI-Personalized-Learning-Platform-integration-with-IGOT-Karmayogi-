@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAT-LEARN AI — MoSPI Capacity Building Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14213D;
+    --ink-soft:#3A4A6B;
+    --paper:#F3F5F8;
+    --surface:#FFFFFF;
+    --sidebar:#0F1B33;
+    --sidebar-line:#24304D;
+    --sidebar-text:#AEB8CF;
+    --amber:#C97A24;
+    --amber-soft:#F7E4C6;
+    --teal:#1F7A6C;
+    --teal-soft:#D9ECE7;
+    --clay:#AA4A34;
+    --clay-soft:#F3DCD4;
+    --border:#DFE3EA;
+    --text-muted:#667085;
+    --radius:10px;
+    --font-serif:'Source Serif 4', Georgia, serif;
+    --font-sans:'IBM Plex Sans', -apple-system, Segoe UI, sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--font-sans);
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--font-serif);font-weight:600;margin:0}
+  p{margin:0}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .num{font-family:var(--font-mono)}
+
+  /* ---------- Login screen ---------- */
+  .login-wrap{min-height:100vh;display:grid;grid-template-columns:1.15fr 1fr}
+  @media (max-width:860px){.login-wrap{grid-template-columns:1fr}}
+  .login-hero{
+    background:var(--sidebar);
+    color:#EDEFF5;
+    padding:64px 56px;
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  @media (max-width:860px){.login-hero{padding:40px 28px}}
+  .brand-mark{display:flex;align-items:center;gap:10px;font-family:var(--font-sans);font-weight:600;font-size:15px;letter-spacing:0.01em}
+  .brand-mark svg{flex-shrink:0}
+  .hero-copy h1{font-size:clamp(28px,3.4vw,42px);line-height:1.18;color:#fff;max-width:560px;margin-top:32px}
+  .hero-copy p{font-size:16px;line-height:1.6;color:#C4CBDD;max-width:480px;margin-top:18px}
+  .pipeline{display:flex;align-items:flex-start;gap:0;margin-top:48px;opacity:0;animation:riseIn .7s ease-out .25s forwards}
+  @keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .pipe-step{flex:1;position:relative;padding-right:6px}
+  .pipe-dot{width:10px;height:10px;border-radius:50%;background:var(--amber);margin-bottom:10px}
+  .pipe-line{position:absolute;top:5px;left:10px;right:6px;height:1px;background:#3B4864}
+  .pipe-label{font-size:12px;color:#9AA4BE;font-weight:500}
+  .pipe-num{font-family:var(--font-mono);font-size:11px;color:#6E7A99;display:block;margin-bottom:4px}
+  .hero-foot{font-size:12px;color:#7C87A2;margin-top:48px}
+
+  .login-panel{background:var(--surface);display:flex;align-items:center;justify-content:center;padding:48px 32px}
+  .login-card{width:100%;max-width:400px}
+  .login-card h2{font-size:23px;margin-bottom:6px}
+  .login-card .sub{color:var(--text-muted);font-size:14px;margin-bottom:20px}
+  
+  .auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+  .auth-tab{flex:1;padding-bottom:10px;font-size:14px;font-weight:500;color:var(--text-muted);text-align:center;border-bottom:2px solid transparent;transition:all .15s}
+  .auth-tab.active{color:var(--ink);border-color:var(--amber)}
+
+  .btn-igot{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--teal);color:#fff;padding:12px 18px;border-radius:8px;font-size:14px;font-weight:500;
+    transition:background .15s;margin-bottom:16px;box-shadow:0 4px 12px rgba(31,122,108,0.2);
+  }
+  .btn-igot:hover{background:#165c51}
+  .igot-note{font-size:11.5px;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.5}
+  .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-muted);font-size:12.5px}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border)}
+
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:12.5px;font-weight:500;color:var(--ink-soft);margin-bottom:5px}
+  .form-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;background:#fff;transition:border-color .15s}
+  .form-input:focus{outline:none;border-color:var(--amber)}
+  
+  .role-select-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
+  .role-chip{font-size:11px;padding:8px 4px;border:1px solid var(--border);border-radius:6px;text-align:center;background:#fff;cursor:pointer;font-weight:500;color:var(--text-muted);transition:all .15s}
+  .role-chip.selected{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+
+  .btn-auth-submit{width:100%;background:var(--ink);color:#fff;padding:12px;border-radius:8px;font-size:14px;font-weight:500;transition:background .15s}
+  .btn-auth-submit:hover{background:#233457}
+
+  /* ---------- App shell ---------- */
+  .shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+  @media (max-width:900px){.shell{grid-template-columns:1fr}}
+  .sidebar{
+    background:var(--sidebar);color:var(--sidebar-text);padding:22px 16px;
+    display:flex;flex-direction:column;
+  }
+  @media (max-width:900px){
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;z-index:40;transform:translateX(-100%);transition:transform .2s ease}
+    body.sidebar-open .sidebar{transform:translateX(0)}
+    body.sidebar-open .scrim{display:block}
+  }
+  .scrim{display:none;position:fixed;inset:0;background:rgba(10,14,26,.5);z-index:30}
+  .side-brand{display:flex;align-items:center;gap:9px;padding:6px 8px 22px;font-weight:600;color:#fff;font-size:14.5px}
+  .side-nav{display:flex;flex-direction:column;gap:2px}
+  .side-link{
+    display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:7px;font-size:13.5px;
+    color:var(--sidebar-text);transition:background .15s,color .15s;
+  }
+  .side-link svg{flex-shrink:0;opacity:.85}
+  .side-link:hover{background:#1B2946;color:#fff}
+  .side-link.active{background:#1E2E52;color:#fff}
+  .side-link.active svg{opacity:1}
+  .side-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--sidebar-line)}
+  .side-user{display:flex;align-items:center;gap:10px;padding:8px}
+  .side-user .av{width:30px;height:30px;border-radius:50%;background:var(--amber);color:#fff;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .side-user .nm{font-size:13px;color:#fff;font-weight:500}
+  .side-user .rl{font-size:11.5px;color:var(--sidebar-text)}
+  .signout{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--sidebar-text);padding:9px 8px;margin-top:4px;width:100%;border-radius:7px}
+  .signout:hover{background:#1B2946;color:#fff}
+
+  .main{min-width:0}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);
+    position:sticky;top:0;z-index:20;
+  }
+  .hamburger{display:none;border:1px solid var(--border);border-radius:7px;padding:7px}
+  @media (max-width:900px){.hamburger{display:flex}}
+  .topbar-title{font-family:var(--font-serif);font-size:19px;font-weight:600}
+  .topbar-right{display:flex;align-items:center;gap:14px}
+  .sync-pill{
+    display:flex;align-items:center;gap:7px;font-size:12px;color:var(--teal);background:var(--teal-soft);
+    padding:6px 11px;border-radius:20px;font-weight:500;
+  }
+  .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+  .role-switch{font-size:12.5px;border:1px solid var(--border);border-radius:20px;padding:6px 12px;background:#fff;color:var(--text-muted)}
+  .role-switch select{border:none;background:none;font-family:inherit;font-size:12.5px;color:var(--ink);font-weight:500}
+
+  .content{padding:28px;max-width:1180px}
+  @media (max-width:640px){.content{padding:18px}}
+  .page-head{margin-bottom:22px}
+  .page-head h1{font-size:25px}
+  .page-head .lede{color:var(--text-muted);font-size:14px;margin-top:5px}
+
+  .grid-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+  @media (max-width:760px){.grid-stats{grid-template-columns:repeat(2,1fr)}}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+  .stat-card .lbl{font-size:12.5px;color:var(--text-muted)}
+  .stat-card .val{font-family:var(--font-mono);font-size:26px;font-weight:600;margin-top:6px;color:var(--ink)}
+
+  .two-col{display:grid;grid-template-columns:1.1fr 1fr;gap:18px}
+  @media (max-width:900px){.two-col{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+  .panel h3{font-size:15.5px;margin-bottom:14px;font-weight:600;font-family:var(--font-sans)}
+
+  .gap-row{margin-bottom:13px}
+  .gap-row:last-child{margin-bottom:0}
+  .gap-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .gap-top .pct{font-family:var(--font-mono);color:var(--text-muted)}
+  .gap-track{height:6px;background:#EDEFF3;border-radius:4px;overflow:hidden}
+  .gap-fill{height:100%;border-radius:4px}
+
+  .rec-list{display:flex;flex-direction:column;gap:10px}
+  .rec-card{border:1px solid var(--border);border-radius:8px;padding:13px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .rec-left{min-width:0}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;margin-bottom:7px}
+  .tag.module{background:var(--teal-soft);color:var(--teal)}
+  .tag.reading{background:#EDEEF2;color:var(--ink-soft)}
+  .tag.practice{background:var(--amber-soft);color:var(--amber)}
+  .rec-card h4{font-size:14px;font-weight:600;margin:0 0 4px}
+  .rec-card .d{font-size:12.5px;color:var(--text-muted);line-height:1.5}
+  .rec-meta{font-size:11.5px;color:var(--text-muted);margin-top:6px;font-family:var(--font-mono)}
+  .btn-start{flex-shrink:0;font-size:12.5px;font-weight:600;color:var(--ink);border:1px solid var(--border);padding:7px 13px;border-radius:7px;white-space:nowrap}
+  .btn-start:hover{border-color:var(--ink);background:var(--paper)}
+
+  .btn-primary{background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;padding:10px 18px;border-radius:8px}
+  .btn-primary:hover{background:#233457}
+  .btn-primary:disabled{opacity:.5;cursor:default}
+  .btn-secondary{border:1px solid var(--border);font-size:13.5px;font-weight:500;padding:10px 18px;border-radius:8px}
+  .btn-secondary:hover{border-color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--text-muted);font-weight:500;font-size:12px;padding:0 10px 10px 0;border-bottom:1px solid var(--border)}
+  td{padding:11px 10px 11px 0;border-bottom:1px solid var(--border)}
+  tr:last-child td{border-bottom:none}
+  .status-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px}
+  .status-pill.reviewed{background:var(--teal-soft);color:var(--teal)}
+  .status-pill.pending{background:var(--amber-soft);color:var(--amber)}
+
+  .pipeline-app{display:flex;margin-bottom:26px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px}
+  .pipe-app-step{flex:1;position:relative;padding-right:10px}
+  .pipe-app-dot{width:11px;height:11px;border-radius:50%;background:#D8DCE4;margin-bottom:10px;position:relative;z-index:1}
+  .pipe-app-step.on .pipe-app-dot{background:var(--amber)}
+  .pipe-app-line{position:absolute;top:5px;left:11px;right:10px;height:1px;background:var(--border)}
+  .pipe-app-num{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);display:block;margin-bottom:3px}
+  .pipe-app-label{font-size:13px;font-weight:500;color:var(--ink)}
+  .pipe-app-step.on .pipe-app-label{color:var(--amber)}
+
+  .path-item{border:1px solid var(--border);border-radius:8px;padding:15px 16px;margin-bottom:10px}
+  .path-item:last-child{margin-bottom:0}
+  .path-item h4{font-size:14.5px;margin-bottom:5px}
+  .path-item .reason{font-size:13px;color:var(--text-muted);line-height:1.55}
+  .path-item .meta{font-size:11.5px;color:var(--teal);font-family:var(--font-mono);margin-top:7px}
+
+  .err-box{border:1px solid var(--clay-soft);background:var(--clay-soft);color:var(--clay);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.5;margin-top:12px}
+  .err-box button{color:var(--clay);text-decoration:underline;font-weight:600;margin-left:4px}
+
+  textarea{
+    width:100%;border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--font-sans);
+    font-size:13.5px;resize:vertical;min-height:150px;color:var(--ink);
+  }
+  textarea:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:transparent}
+  .field-row{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .field-row label{font-size:13px;color:var(--text-muted)}
+  select.count-select{border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-family:inherit;font-size:13px}
+
+  .mcq-item{border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:12px}
+  .mcq-item .q{font-size:14px;font-weight:600;margin-bottom:10px}
+  .mcq-opt{font-size:13px;padding:7px 0;color:var(--ink-soft)}
+  .mcq-opt.correct{color:var(--teal);font-weight:600}
+  .mcq-exp{font-size:12.5px;color:var(--text-muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);line-height:1.5}
+
+  .lib-tabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+  .lib-tab{font-size:13.5px;font-weight:500;padding:10px 4px;color:var(--text-muted);border-bottom:2px solid transparent;margin-right:18px}
+  .lib-tab.active{color:var(--ink);border-color:var(--amber)}
+
+  .quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px;max-width:620px}
+  .quiz-progress{font-size:12px;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:16px}
+  .quiz-q{font-size:17px;font-weight:600;margin-bottom:18px;line-height:1.4}
+  .quiz-opt{
+    display:block;width:100%;text-align:left;border:1px solid var(--border);border-radius:8px;
+    padding:12px 14px;margin-bottom:9px;font-size:14px;transition:border-color .15s,background .15s;
+  }
+  .quiz-opt:hover{border-color:var(--ink-soft)}
+  .quiz-opt.picked-correct{border-color:var(--teal);background:var(--teal-soft);color:var(--teal);font-weight:600}
+  .quiz-opt.picked-wrong{border-color:var(--clay);background:var(--clay-soft);color:var(--clay);font-weight:600}
+  .quiz-opt[disabled]{cursor:default}
+  .quiz-exp{font-size:13px;color:var(--text-muted);background:var(--paper);border-radius:8px;padding:12px 14px;margin-top:6px;line-height:1.55}
+  .quiz-score{font-family:var(--font-mono);font-size:44px;color:var(--ink);margin:10px 0}
+
+  /* Chat widget */
+  .chat-fab{
+    position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;
+    background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 24px rgba(20,33,61,.35);z-index:50;transition:transform .2s;
+  }
+  .chat-fab:hover{transform:scale(1.05);background:#233457}
+  .chat-panel{
+    position:fixed;bottom:24px;right:24px;width:380px;max-height:min(80vh,600px);
+    background:#fff;border:1px solid var(--border);border-radius:16px;
+    box-shadow:0 20px 48px rgba(20,33,61,.28);display:flex;flex-direction:column;z-index:50;overflow:hidden;
+  }
+  @media (max-width:480px){.chat-panel{right:12px;left:12px;width:auto;bottom:12px}}
+  .chat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:#fafbfc}
+  .chat-head .t{font-size:14px;font-weight:600}
+  .chat-head .s{font-size:11px;color:var(--teal);display:flex;align-items:center;gap:5px;margin-top:2px}
+  .chat-head .s::before{content:"";width:6px;height:6px;background:var(--teal);border-radius:50%;display:inline-block}
+  
+  .chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:88%;font-size:13.5px;line-height:1.55;padding:10px 14px;border-radius:12px}
+  .msg.user{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:3px}
+  .msg.assistant{align-self:flex-start;background:var(--paper);color:var(--ink);border-bottom-left-radius:3px}
+  .msg.loading{align-self:flex-start;color:var(--text-muted);font-style:italic;background:var(--paper)}
+
+  .chat-quick-chips{padding:8px 14px;display:flex;gap:6px;overflow-x:auto;background:#fff;border-top:1px solid var(--border)}
+  .chat-chip{font-size:11px;background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:4px 10px;white-space:nowrap;color:var(--ink-soft);cursor:pointer;transition:all .15s}
+  .chat-chip:hover{background:var(--teal-soft);color:var(--teal);border-color:var(--teal)}
+
+  .chat-foot{border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;background:#fff}
+  .chat-foot input{flex:1;border:1px solid var(--border);border-radius:20px;padding:9px 14px;font-size:13px;font-family:inherit}
+  .chat-foot input:focus{outline:2px solid var(--amber);outline-offset:1px}
+  .chat-send{width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+  .chat-send:hover{background:#233457}
+
+  .note{font-size:12px;color:var(--text-muted);line-height:1.6;margin-top:6px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="chat-root"></div>
+
+<script>
+/* ============ ICONS ============ */
+const ICONS = {
+  grid: `<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="6" height="6" rx="1.2"/><rect x="11" y="3" width="6" height="6" rx="1.2"/><rect x="3" y="11" width="6" height="6" rx="1.2"/><rect x="11" y="11" width="6" height="6" rx="1.2"/></svg>`,
+  route: `<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="4" cy="5" r="2"/><circle cx="16" cy="15" r="2"/><path d="M4 7v3a3 3 0 0 0 3 3h6"/></svg>`,
+  book: `<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h5a2 2 0 0 1 2 2v10a2 2 0 0 0-2-2H4V4Z"/><path d="M16 4h-5a2 2 0 0 0-2 2v10a2 2 0 0 1 2-2h5V4Z"/></svg>`,
+  users: `<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="6" r="2.4"/><path d="M2.5 16c.5-3 2-4.6 4.5-4.6s4 1.6 4.5 4.6"/><circle cx="14.5" cy="7" r="2"/><path d="M12.6 11.8c1.9.2 3.2 1.6 3.6 4.2"/></svg>`,
+  link: `<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 12l4-4"/><path d="M7 14 4.5 16.5a2.8 2.8 0 1 1-4-4L3 10"/><path d="M13 6l2.5-2.5a2.8 2.8 0 1 1 4 4L17 10"/></svg>`,
+  chart: `<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17V3"/><path d="M3 17h14"/><rect x="6" y="10" width="2.4" height="7"/><rect x="10.5" y="6" width="2.4" height="11"/><rect x="15" y="12" width="2.4" height="5"/></svg>`,
+  logout: `<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4H4v12h4"/><path d="M13 14l4-4-4-4"/><path d="M17 10H8"/></svg>`,
+  menu: `<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h14M3 10h14M3 15h14"/></svg>`,
+  chat: `<svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9.5C3 5.9 6.4 3 10.5 3S18 5.9 18 9.5 14.6 16 10.5 16c-1 0-2-.2-2.9-.5L4 17l1-3.4C3.7 12.4 3 11 3 9.5Z"/></svg>`,
+  close: `<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l12 12M16 4 4 16"/></svg>`,
+  send: `<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M17 3 3 9.2l5.4 2 2 5.5L17 3Z"/></svg>`,
+  igot: `<svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 1a9 9 0 1 0 0 18V1Z" fill="#C97A24"/><path d="M10 1a9 9 0 1 1 0 18V1Z" fill="#1F7A6C"/></svg>`
+};
+
+/* ============ STATIC CONTENT ============ */
+const GAPS = [
+  {topic:'Stratified sampling', gap:64},
+  {topic:'Time-series deseasonalization', gap:58},
+  {topic:'Index number construction', gap:41},
+  {topic:'Non-sampling error', gap:22}
+];
+function gapColor(g){ return g>=55?'var(--clay)':g>=35?'var(--amber)':'var(--teal)'; }
+
+const RECS = [
+  {tag:'module', tagLabel:'Module', duration:'25 min', title:'Stratified Sampling in Practice', desc:'Work through three field scenarios and pick the right allocation method.'},
+  {tag:'reading', tagLabel:'Reading', duration:'12 min', title:'Index Numbers: Common Pitfalls', desc:'Why Laspeyres and Paasche indices tell different stories about the same prices.'},
+  {tag:'practice', tagLabel:'Practice set', duration:'10 questions', title:'Non-Sampling Error Drill', desc:'Spot measurement, coverage, and response errors before they reach the report.'},
+  {tag:'module', tagLabel:'Module', duration:'18 min', title:'Reading a Deseasonalized Series', desc:'Separate trend, seasonal, and irregular components in monthly IIP data.'}
+];
+
+const DEFAULT_PATH = [
+  {title:'Stratified Sampling in Practice', reason:"Your last assessment showed a 64% gap here — the largest in your profile.", minutes:25},
+  {title:'Reading a Deseasonalized Series', reason:'A 58% gap suggests time-series interpretation needs reinforcement.', minutes:18},
+  {title:'Index Numbers: Common Pitfalls', reason:'A moderate 41% gap — a good next step once sampling is solid.', minutes:12},
+  {title:'Non-Sampling Error Drill', reason:'Smallest gap at 22% — a quick refresher locks it in.', minutes:10}
+];
+
+const UPLOADS = [
+  {name:'Sampling_Frame_Module_v2.pdf', topic:'Stratified sampling', status:'reviewed', qcount:12},
+  {name:'IIP_Deseasonalization_Notes.docx', topic:'Time-series methods', status:'pending', qcount:0},
+  {name:'Index_Numbers_Handbook_ch4.pdf', topic:'Index numbers', status:'reviewed', qcount:9},
+  {name:'NonSampling_Error_FieldGuide.pdf', topic:'Non-sampling error', status:'pending', qcount:0}
+];
+
+const LEARNERS = [
+  {name:'Officer #204', division:'Bihar Regional Office', readiness:82, active:'Today'},
+  {name:'Officer #118', division:'NSSO Field Unit, Odisha', readiness:64, active:'Yesterday'},
+  {name:'Officer #331', division:'MoSPI HQ, DIID', readiness:91, active:'2 days ago'},
+  {name:'Officer #077', division:'Tamil Nadu Regional Office', readiness:58, active:'3 days ago'}
+];
+
+const SYNC_LOG = [
+  {when:'2 min ago', event:'Credential pushed — "Survey Design Fundamentals" — Officer #331'},
+  {when:'19 min ago', event:'Profile sync — 14 officers, Bihar Regional Office'},
+  {when:'1 hr ago', event:'Credential pushed — "Index Numbers" — Officer #204'},
+  {when:'3 hr ago', event:'Nightly full sync completed — 1,842 profiles'}
+];
+
+const QUIZ_BANK = [
+  {q:'In stratified random sampling, strata are ideally formed so that units within a stratum are __ and units across strata are __.',
+   options:['Heterogeneous / heterogeneous','Homogeneous / heterogeneous','Homogeneous / homogeneous','Heterogeneous / homogeneous'],
+   correct:1, exp:'Strata are built to be internally similar, which reduces variance within each stratum and improves precision.'},
+  {q:'Which allocation method assigns more sample units to strata with larger variance, for a fixed total sample size?',
+   options:['Proportional allocation','Equal allocation','Neyman (optimum) allocation','Systematic allocation'],
+   correct:2, exp:'Neyman allocation minimizes variance for a given cost by weighting strata with both size and variability.'},
+  {q:'A Laspeyres price index uses quantities from which period as weights?',
+   options:['The current period','The base period','An average of both periods','A forecast period'],
+   correct:1, exp:'Laspeyres fixes base-period quantities, which is why it tends to overstate inflation as consumption patterns shift.'},
+  {q:'Non-sampling error can arise from all of the following EXCEPT:',
+   options:['Non-response','Measurement error','Sampling frame error','Random sampling fluctuation'],
+   correct:3, exp:'Random sampling fluctuation is sampling error — it exists even with a perfect frame and full response.'},
+  {q:'Deseasonalizing a time series primarily helps analysts to:',
+   options:['Remove the trend component','Compare periods without seasonal distortion','Increase the sample size','Eliminate non-sampling error'],
+   correct:1, exp:'Removing the seasonal component lets you compare, say, February to March without a seasonal effect masking the real change.'}
+];
+
+/* ============ STATE ============ */
+const STATE = {
+  role: null, 
+  view: 'dashboard', 
+  sidebarOpen: false,
+  authTab: 'login',
+  loginRole: 'learner',
+  chatOpen: false,
+  chatMessages: [
+    {role:'assistant', text:"Hello! I'm your enhanced AI Tutor for official statistics. Ask me anything about sampling methods, index numbers, national accounts, or request a quick study path review."}
+  ],
+  chatLoading: false,
+  quiz: null,
+  libTab: 'practice',
+  mcq: {material:'', count:5, loading:false, error:null, generated:null},
+  path: {loading:false, error:null, items: DEFAULT_PATH}
+};
+
+const ROLE_META = {
+  learner: {label:'Officer / Learner', name:'R. Iyer', initials:'RI'},
+  trainer: {label:'Trainer / Content Admin', name:'S. Fernandes', initials:'SF'},
+  admin:   {label:'MoSPI Admin', name:'A. Krishnan', initials:'AK'}
+};
+
+/* ============ API HELPER ============ */
+async function callClaude(messages, system){
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1400, system: system, messages: messages })
+  });
+  if(!resp.ok) throw new Error('status ' + resp.status);
+  const data = await resp.json();
+  return (data.content||[]).map(b => b.type==='text' ? b.text : '').join('\n').trim();
+}
+function parseJsonLoose(text){
+  const clean = text.replace(/```json/gi,'').replace(/```/g,'').trim();
+  const start = clean.indexOf('[') === -1 ? clean.indexOf('{') : clean.indexOf('[');
+  const end = clean.lastIndexOf(']') === -1 ? clean.lastIndexOf('}') : clean.lastIndexOf(']');
+  const slice = start!==-1 && end!==-1 ? clean.slice(start, end+1) : clean;
+  return JSON.parse(slice);
+}
+
+/* ============ RENDER: LOGIN ============ */
+function renderLogin(){
+  return `
+  <div class="login-wrap">
+    <div class="login-hero">
+      <div>
+        <div class="brand-mark">${ICONS.igot}<span>STAT-LEARN AI PRO</span></div>
+        <div class="hero-copy">
+          <h1>Close the gap between what officers know and what the survey demands.</h1>
+          <p>STAT-LEARN AI reads each officer's assessment results, maps them against official statistics competencies, and builds a targeted training path — synced seamlessly to iGOT Karmayogi.</p>
+        </div>
+        <div class="pipeline">
+          ${['Assess','Analyze','Customize','Adapt','Track'].map((s,i)=>`
+            <div class="pipe-step">
+              <div class="pipe-line" style="${i===4?'display:none':''}"></div>
+              <div class="pipe-dot"></div>
+              <span class="pipe-num">0${i+1}</span>
+              <span class="pipe-label">${s}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="hero-foot">Advanced Capacity Building Platform · Ministry of Statistics and Programme Implementation</div>
+    </div>
+    
+    <div class="login-panel">
+      <div class="login-card">
+        <div class="auth-tabs">
+          <button class="auth-tab ${STATE.authTab==='login'?'active':''}" data-action="set-auth-tab" data-tab="login">Sign In</button>
+          <button class="auth-tab ${STATE.authTab==='signup'?'active':''}" data-action="set-auth-tab" data-tab="signup">Register / Sign Up</button>
+        </div>
+
+        <button class="btn-igot" data-action="igot-login">
+          ${ICONS.igot}<span>Sign in with iGOT Karmayogi SSO</span>
+        </button>
+        
+        <div class="divider">or use credentials</div>
+
+        <form id="auth-form" onsubmit="return false;">
+          ${STATE.authTab==='signup' ? `
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" class="form-input" id="auth-name" placeholder="e.g. Ramesh Kumar" required />
+            </div>
+          `:''}
+
+          <div class="form-group">
+            <label>Government / Official Email</label>
+            <input type="email" class="form-input" id="auth-email" placeholder="name@gov.in" required />
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-input" id="auth-pass" placeholder="••••••••" required />
+          </div>
+
+          <div class="form-group">
+            <label>Select User Role Profile</label>
+            <div class="role-select-grid">
+              <div class="role-chip ${STATE.loginRole==='learner'?'selected':''}" data-action="select-login-role" data-role="learner">Learner</div>
+              <div class="role-chip ${STATE.loginRole==='trainer'?'selected':''}" data-action="select-login-role" data-role="trainer">Trainer</div>
+              <div class="role-chip ${STATE.loginRole==='admin'?'selected':''}" data-action="select-login-role" data-role="admin">Admin</div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-auth-submit" data-action="submit-auth">
+            ${STATE.authTab==='login' ? 'Access Dashboard' : 'Create Account & Login'}
+          </button>
+        </form>
+        <p class="igot-note">Secure gateway compliant with national e-governance authentication standards.</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============ RENDER: SHELL ============ */
+function navItems(role){
+  const base = [ {v:'dashboard', label:'Dashboard', icon:ICONS.grid} ];
+  if(role==='learner') return base.concat([
+    {v:'path', label:'Learning Path', icon:ICONS.route},
+    {v:'library', label:'Content Library', icon:ICONS.book}
+  ]);
+  if(role==='trainer') return base.concat([
+    {v:'library', label:'Content Library', icon:ICONS.book},
+    {v:'progress', label:'Learner Progress', icon:ICONS.users}
+  ]);
+  return base.concat([
+    {v:'integrations', label:'Integrations', icon:ICONS.link},
+    {v:'analytics', label:'Platform Analytics', icon:ICONS.chart},
+    {v:'access', label:'Users & Access', icon:ICONS.users}
+  ]);
+}
+function pageTitle(view){
+  return {dashboard:'Dashboard', path:'Learning Path', library:'Content Library', progress:'Learner Progress',
+          integrations:'Integrations', analytics:'Platform Analytics', access:'Users & Access'}[view] || 'Dashboard';
+}
+function renderShell(){
+  const meta = ROLE_META[STATE.role];
+  return `
+  <div class="scrim" data-action="close-sidebar"></div>
+  <div class="shell">
+    <div class="sidebar">
+      <div class="side-brand">${ICONS.igot}STAT-LEARN AI</div>
+      <div class="side-nav">
+        ${navItems(STATE.role).map(n => `
+          <a href="#" class="side-link ${STATE.view===n.v?'active':''}" data-action="set-view" data-view="${n.v}">${n.icon}${n.label}</a>`).join('')}
+      </div>
+      <div class="side-foot">
+        <div class="side-user">
+          <span class="av">${meta.initials}</span>
+          <span><span class="nm" style="display:block">${meta.name}</span><span class="rl">${meta.label}</span></span>
+        </div>
+        <button class="signout" data-action="sign-out">${ICONS.logout}Sign out</button>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="hamburger" data-action="open-sidebar">${ICONS.menu}</button>
+          <span class="topbar-title">${pageTitle(STATE.view)}</span>
+        </div>
+        <div class="topbar-right">
+          <span class="sync-pill"><span class="sync-dot"></span>iGOT Karmayogi connected</span>
+          <span class="role-switch">View as
+            <select data-action="switch-role">
+              <option value="learner" ${STATE.role==='learner'?'selected':''}>Officer / Learner</option>
+              <option value="trainer" ${STATE.role==='trainer'?'selected':''}>Trainer / Content Admin</option>
+              <option value="admin" ${STATE.role==='admin'?'selected':''}>MoSPI Admin</option>
+            </select>
+          </span>
+        </div>
+      </div>
+      <div class="content">${renderView()}</div>
+    </div>
+  </div>`;
+}
+
+function renderView(){
+  if(STATE.view==='path') return viewPath();
+  if(STATE.view==='library') return viewLibrary();
+  if(STATE.view==='progress') return viewProgress();
+  if(STATE.view==='integrations') return viewIntegrations();
+  if(STATE.view==='analytics') return viewAnalytics();
+  if(STATE.view==='access') return viewAccess();
+  return viewDashboard();
+}
+
+/* ============ VIEWS ============ */
+function viewDashboard(){
+  if(STATE.role==='learner') return `
+    <div class="page-head"><h1>Welcome back, Officer.</h1><p class="lede">Here's where your training stands today.</p></div>
+    <div class="grid-stats">
+      ${stat('Modules completed','7')}${stat('Competency gaps flagged','3')}${stat('Study time this month','4h 40m')}${stat('Readiness score','72%')}
+    </div>
+    <div class="two-col">
+      <div class="panel"><h3>Competency gaps</h3>
+        ${GAPS.map(g=>`<div class="gap-row"><div class="gap-top"><span>${g.topic}</span><span class="pct">${g.gap}%</span></div>
+          <div class="gap-track"><div class="gap-fill" style="width:${g.gap}%;background:${gapColor(g.gap)}"></div></div></div>`).join('')}
+      </div>
+      <div class="panel"><h3>Recommended for you</h3>
+        <div class="rec-list">${RECS.map(recCard).join('')}</div>
+      </div>
+    </div>`;
+  if(STATE.role==='trainer') return `
+    <div class="page-head"><h1>Welcome back, Trainer.</h1><p class="lede">Content and learner activity at a glance.</p></div>
+    <div class="grid-stats">
+      ${stat('Learners assigned','128')}${stat('MCQ sets generated','34')}${stat('Avg. completion rate','81%')}${stat('Materials pending review','5')}
+    </div>
+    <div class="panel"><h3>Recent uploads</h3>${uploadsTable()}</div>`;
+  return `
+    <div class="page-head"><h1>Welcome back, Admin.</h1><p class="lede">Platform health and iGOT Karmayogi sync status.</p></div>
+    <div class="grid-stats">
+      ${stat('Active officers','1,842')}${stat('iGOT sync success rate','99.2%')}${stat('Credentials issued (Q)','312')}${stat('Divisions onboarded','18')}
+    </div>
+    <div class="two-col">
+      <div class="panel"><h3>iGOT Karmayogi sync</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">Last full sync: <span class="num">3 hours ago</span> · Next scheduled: <span class="num">tonight, 02:00</span></p>
+        ${SYNC_LOG.map(l=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+          <span>${l.event}</span><span class="num" style="color:var(--text-muted);flex-shrink:0">${l.when}</span></div>`).join('')}
+      </div>
+      <div class="panel"><h3>Division snapshot</h3>
+        ${[['Bihar Regional Office',82],['NSSO Field Unit, Odisha',67],['MoSPI HQ, DIID',91],['Tamil Nadu Regional Office',58]].map(d=>`
+        <div class="gap-row"><div class="gap-top"><span>${d[0]}</span><span class="pct">${d[1]}% ready</span></div>
+        <div class="gap-track"><div class="gap-fill" style="width:${d[1]}%;background:var(--teal)"></div></div></div>`).join('')}
+      </div>
+    </div>`;
+}
+function stat(lbl,val){ return `<div class="stat-card"><div class="lbl">${lbl}</div><div class="val">${val}</div></div>`; }
+function recCard(r){
+  return `<div class="rec-card"><div class="rec-left">
+    <span class="tag ${r.tag}">${r.tagLabel}</span>
+    <h4>${r.title}</h4><p class="d">${r.desc}</p><div class="rec-meta">${r.duration}</div>
+  </div><button class="btn-start" data-action="start-rec">Start</button></div>`;
+}
+function uploadsTable(){
+  return `<table><thead><tr><th>Material</th><th>Topic</th><th>Status</th><th>Questions</th></tr></thead><tbody>
+    ${UPLOADS.map(u=>`<tr><td>${u.name}</td><td>${u.topic}</td>
+      <td><span class="status-pill ${u.status}">${u.status==='reviewed'?'Reviewed':'Pending'}</span></td>
+      <td class="num">${u.qcount||'—'}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+function viewPath(){
+  const items = STATE.path.items;
+  return `
+  <div class="page-head"><h1>Your learning path</h1><p class="lede">Built from your last competency assessment.</p></div>
+  <div class="pipeline-app">
+    ${['Assess','Analyze','Customize','Adapt','Track'].map((s,i)=>`
+      <div class="pipe-app-step ${i===2?'on':''}">
+        <div class="pipe-app-line" style="${i===4?'display:none':''}"></div>
+        <div class="pipe-app-dot"></div>
+        <span class="pipe-app-num">0${i+1}</span><span class="pipe-app-label">${s}</span>
+      </div>`).join('')}
+  </div>
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="margin:0">Recommended modules</h3>
+      <button class="btn-secondary" data-action="regen-path" ${STATE.path.loading?'disabled':''}>${STATE.path.loading?'Thinking…':'Regenerate with AI'}</button>
+    </div>
+    ${items.map(p=>`<div class="path-item"><h4>${p.title}</h4><p class="reason">${p.reason}</p><div class="meta">${p.minutes} min</div></div>`).join('')}
+    ${STATE.path.error ? `<div class="err-box">${STATE.path.error} <button data-action="regen-path">Try again</button></div>` : ''}
+  </div>`;
+}
+
+function viewLibrary(){
+  if(STATE.role==='learner'){
+    if(STATE.quiz) return quizScreen();
+    return `
+    <div class="page-head"><h1>Content library</h1><p class="lede">Practice sets built from your training material.</p></div>
+    <div class="panel">
+      <h3>Practice: Sampling &amp; Official Statistics</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">5 questions · covers sampling, index numbers, and error sources.</p>
+      <button class="btn-primary" data-action="start-quiz">Start practice quiz</button>
+    </div>`;
+  }
+  return `
+  <div class="page-head"><h1>Content library</h1><p class="lede">Turn uploaded material into a reviewable MCQ set.</p></div>
+  <div class="lib-tabs">
+    <button class="lib-tab ${STATE.libTab==='generate'?'active':''}" data-action="lib-tab" data-tab="generate">Generate MCQs</button>
+    <button class="lib-tab ${STATE.libTab==='bank'?'active':''}" data-action="lib-tab" data-tab="bank">Uploaded material</button>
+  </div>
+  ${STATE.libTab==='bank' ? `<div class="panel">${uploadsTable()}</div>` : mcqGenerator()}`;
+}
+function mcqGenerator(){
+  const m = STATE.mcq;
+  return `
+  <div class="panel">
+    <h3>Paste learning material</h3>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Stands in for an uploaded PDF/DOCX — paste a passage and generate questions from it.</p>
+    <textarea id="mcq-material" placeholder="e.g. a paragraph on stratified sampling, index numbers, or survey non-response...">${m.material}</textarea>
+    <div class="field-row">
+      <label>Number of questions</label>
+      <select class="count-select" id="mcq-count">
+        ${[3,5,8].map(n=>`<option value="${n}" ${m.count===n?'selected':''}>${n}</option>`).join('')}
+      </select>
+      <button class="btn-primary" data-action="gen-mcq" ${m.loading?'disabled':''}>${m.loading?'Generating…':'Generate MCQs'}</button>
+    </div>
+    ${m.error?`<div class="err-box">${m.error} <button data-action="gen-mcq">Try again</button></div>`:''}
+  </div>
+  ${m.generated ? `<div class="panel" style="margin-top:16px"><h3>Generated set (${m.generated.length} questions)</h3>
+    ${m.generated.map(mcqItem).join('')}
+    <button class="btn-secondary" data-action="save-bank">Add to MCQ bank</button>
+  </div>` : ''}`;
+}
+function mcqItem(q){
+  return `<div class="mcq-item"><div class="q">${escapeHtml(q.question)}</div>
+    ${q.options.map((o,i)=>`<div class="mcq-opt ${i===q.correctIndex?'correct':''}">${escapeHtml(o)}</div>`).join('')}
+    <div class="mcq-exp">${escapeHtml(q.explanation||'')}</div></div>`;
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s==null?'':String(s); return d.innerHTML; }
+
+function quizScreen(){
+  const s = STATE.quiz;
+  if(s.finished){
+    return `<div class="quiz-card">
+      <p style="font-size:13px;color:var(--text-muted)">Practice complete</p>
+      <div class="quiz-score">${s.score}/${QUIZ_BANK.length}</div>
+      <p style="font-size:14px;color:var(--ink-soft);margin-bottom:20px">${s.score>=4?'Strong result — this topic looks solid.':'Worth another pass — review the explanations above.'}</p>
+      <button class="btn-primary" data-action="retake-quiz">Retake</button>
+      <button class="btn-secondary" style="margin-left:8px" data-action="exit-quiz">Back to library</button>
+    </div>`;
+  }
+  const q = QUIZ_BANK[s.index];
+  const answered = s.answers[s.index] !== undefined;
+  return `<div class="quiz-card">
+    <div class="quiz-progress">Question ${s.index+1} of ${QUIZ_BANK.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    ${q.options.map((o,i)=>{
+      let cls='quiz-opt';
+      if(answered){
+        if(i===q.correct) cls+=' picked-correct';
+        else if(i===s.answers[s.index]) cls+=' picked-wrong';
+      }
+      return `<button class="${cls}" data-action="answer-quiz" data-idx="${i}" ${answered?'disabled':''}>${o}</button>`;
+    }).join('')}
+    ${answered?`<div class="quiz-exp">${q.exp}</div>
+      <div style="margin-top:16px"><button class="btn-primary" data-action="next-quiz">${s.index+1<QUIZ_BANK.length?'Next question':'See results'}</button></div>`:''}
+  </div>`;
+}
+
+function viewProgress(){
+  return `
+  <div class="page-head"><h1>Learner progress</h1><p class="lede">Officers assigned to your uploaded material.</p></div>
+  <div class="panel"><table><thead><tr><th>Officer</th><th>Division</th><th>Readiness</th><th>Last active</th></tr></thead><tbody>
+    ${LEARNERS.map(l=>`<tr><td>${l.name}</td><td>${l.division}</td><td class="num">${l.readiness}%</td><td>${l.active}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+function viewIntegrations(){
+  return `
+  <div class="page-head"><h1>Integrations</h1><p class="lede">Connection to the iGOT Karmayogi ecosystem.</p></div>
+  <div class="two-col">
+    <div class="panel"><h3>iGOT Karmayogi</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">Status: <span style="color:var(--teal);font-weight:600">Connected</span> · Last sync <span class="num">3 hours ago</span> · <span class="num">1,842</span> profiles</p>
+      ${SYNC_LOG.map(l=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span>${l.event}</span><span class="num" style="color:var(--text-muted);flex-shrink:0">${l.when}</span></div>`).join('')}
+      <p class="note">Simulates the iGOT Karmayogi API handshake. Production environments securely authenticate via registered OAuth clients.</p>
+    </div>
+    <div class="panel"><h3>Sync settings</h3>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:10px">Auto-push credentials on module completion — <strong>on</strong></p>
+      <p style="font-size:13px;color:var(--ink-soft);margin-bottom:10px">Nightly full profile sync — <strong>02:00 IST</strong></p>
+      <p style="font-size:13px;color:var(--ink-soft)">Competency framework source — <strong>National Statistical Commission</strong></p>
+    </div>
+  </div>`;
+}
+function viewAnalytics(){
+  return `
+  <div class="page-head"><h1>Platform analytics</h1><p class="lede">Aggregate readiness across divisions.</p></div>
+  <div class="grid-stats">${stat('Active officers','1,842')}${stat('Avg. readiness score','74%')}${stat('MCQs generated (Q)','1,206')}${stat('Chatbot sessions (30d)','3,910')}</div>
+  <div class="panel"><h3>Readiness by division</h3>
+    ${[['Bihar Regional Office',82],['NSSO Field Unit, Odisha',67],['MoSPI HQ, DIID',91],['Tamil Nadu Regional Office',58],['West Bengal Regional Office',70]].map(d=>`
+    <div class="gap-row"><div class="gap-top"><span>${d[0]}</span><span class="pct">${d[1]}%</span></div>
+    <div class="gap-track"><div class="gap-fill" style="width:${d[1]}%;background:var(--teal)"></div></div></div>`).join('')}
+  </div>`;
+}
+function viewAccess(){
+  const rows = [
+    {role:'Officer / Learner', count:1842, perms:'Self-assessment, personalized path, quiz practice'},
+    {role:'Trainer / Content Admin', count:64, perms:'Upload material, generate &amp; review MCQs, track learner progress'},
+    {role:'MoSPI Admin', count:12, perms:'iGOT sync management, platform analytics, user &amp; access control'}
+  ];
+  return `
+  <div class="page-head"><h1>Users &amp; access</h1><p class="lede">Restricted functional modules by role.</p></div>
+  <div class="panel"><table><thead><tr><th>Role</th><th>Users</th><th>Access</th></tr></thead><tbody>
+    ${rows.map(r=>`<tr><td>${r.role}</td><td class="num">${r.count}</td><td style="color:var(--text-muted)">${r.perms}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+/* ============ AI CHAT WIDGET ============ */
+const QUICK_PROMPTS = [
+  "Analyze my current skill gaps",
+  "Explain stratified sampling",
+  "What is IIP deseasonalization?",
+  "Help me prepare for tomorrow's quiz"
+];
+
+function renderChat(){
+  if(!STATE.role) return '';
+  if(!STATE.chatOpen){
+    return `<button class="chat-fab" data-action="toggle-chat" aria-label="Open AI tutor">${ICONS.chat}</button>`;
+  }
+  return `
+  <div class="chat-panel">
+    <div class="chat-head">
+      <div>
+        <div class="t">STAT-LEARN AI Tutor</div>
+        <div class="s">24/7 Context-Aware Assistance</div>
+      </div>
+      <button data-action="toggle-chat" aria-label="Close">${ICONS.close}</button>
+    </div>
+    
+    <div class="chat-body" id="chat-body">
+      ${STATE.chatMessages.map(m=>`<div class="msg ${m.role}">${escapeHtml(m.text)}</div>`).join('')}
+      ${STATE.chatLoading ? `<div class="msg loading">AI tutor is analyzing query…</div>` : ''}
+    </div>
+
+    <div class="chat-quick-chips">
+      ${QUICK_PROMPTS.map(qp => `<button class="chat-chip" data-action="quick-chat" data-prompt="${qp}">${qp}</button>`).join('')}
+    </div>
+
+    <div class="chat-foot">
+      <input id="chat-input" type="text" placeholder="Ask about sampling, index numbers..." />
+      <button class="chat-send" data-action="send-chat" aria-label="Send">${ICONS.send}</button>
+    </div>
+  </div>`;
+}
+
+/* ============ MAIN RENDER ============ */
+function render(){
+  document.getElementById('root').innerHTML = STATE.role ? renderShell() : renderLogin();
+  document.getElementById('chat-root').innerHTML = renderChat();
+  document.body.classList.toggle('sidebar-open', STATE.sidebarOpen);
+  const cb = document.getElementById('chat-body');
+  if(cb) cb.scrollTop = cb.scrollHeight;
+}
+
+/* ============ ACTIONS ============ */
+async function handleAction(action, el){
+  if(action==='set-auth-tab'){ STATE.authTab = el.dataset.tab; render(); return; }
+  if(action==='select-login-role'){ STATE.loginRole = el.dataset.role; render(); return; }
+  
+  if(action==='igot-login' || action==='submit-auth'){
+    STATE.role = STATE.loginRole; 
+    STATE.view = 'dashboard'; 
+    render(); 
+    return;
+  }
+
+  // Fixed role switcher mapping for switch-role and set-role
+  if(action==='set-role' || action==='switch-role'){ 
+    STATE.role = el.value; 
+    STATE.view = 'dashboard'; 
+    STATE.quiz = null; 
+    render(); 
+    return; 
+  }
+
+  if(action==='sign-out'){ STATE.role=null; render(); return; }
+  if(action==='set-view'){ STATE.view=el.dataset.view; STATE.sidebarOpen=false; render(); return; }
+  if(action==='open-sidebar'){ STATE.sidebarOpen=true; render(); return; }
+  if(action==='close-sidebar'){ STATE.sidebarOpen=false; render(); return; }
+  if(action==='lib-tab'){ STATE.libTab=el.dataset.tab; render(); return; }
+  if(action==='start-rec'){ STATE.view='library'; render(); return; }
+
+  if(action==='start-quiz' || action==='retake-quiz'){
+    STATE.quiz = {index:0, score:0, answers:[], finished:false}; render(); return;
+  }
+  if(action==='exit-quiz'){ STATE.quiz=null; render(); return; }
+  if(action==='answer-quiz'){
+    const idx = parseInt(el.dataset.idx,10);
+    const s = STATE.quiz, q = QUIZ_BANK[s.index];
+    s.answers[s.index] = idx;
+    if(idx===q.correct) s.score++;
+    render(); return;
+  }
+  if(action==='next-quiz'){
+    const s = STATE.quiz;
+    if(s.index+1 < QUIZ_BANK.length) s.index++; else s.finished=true;
+    render(); return;
+  }
+
+  if(action==='regen-path'){
+    STATE.path.loading=true; STATE.path.error=null; render();
+    try{
+      const sys = "You are a training-design assistant for India's Official Statistical System. Given a list of competency gaps (topic + gap percentage), return ONLY a JSON array (no prose, no markdown fences) of 4 objects with fields: title (a specific training module name), reason (one sentence citing the gap), minutes (integer). Ground topics in official statistics: sampling, index numbers, national accounts, survey methodology, data visualization.";
+      const msg = [{role:'user', content: 'Competency gaps: ' + JSON.stringify(GAPS)}];
+      const text = await callClaude(msg, sys);
+      const parsed = parseJsonLoose(text);
+      if(Array.isArray(parsed) && parsed.length) STATE.path.items = parsed;
+      else throw new Error('empty');
+    }catch(e){
+      STATE.path.error = "Couldn't reach the AI service just now.";
+    }
+    STATE.path.loading=false; render(); return;
+  }
+
+  if(action==='gen-mcq'){
+    const material = document.getElementById('mcq-material').value.trim();
+    const count = parseInt(document.getElementById('mcq-count').value,10);
+    STATE.mcq.material = material; STATE.mcq.count = count;
+    if(!material){ STATE.mcq.error='Paste some material first.'; render(); return; }
+    STATE.mcq.loading=true; STATE.mcq.error=null; STATE.mcq.generated=null; render();
+    try{
+      const sys = `You are an assessment-design assistant for a government statistical-training platform. Given a passage of learning material, generate exactly ${count} multiple-choice questions strictly as JSON: an array of objects with fields question (string), options (array of exactly 4 strings), correctIndex (0-3 integer), explanation (string). Return ONLY the JSON array — no prose, no markdown fences.`;
+      const text = await callClaude([{role:'user', content: material}], sys);
+      const parsed = parseJsonLoose(text);
+      if(Array.isArray(parsed) && parsed.length) STATE.mcq.generated = parsed;
+      else throw new Error('empty');
+    }catch(e){
+      STATE.mcq.error = "Couldn't generate questions right now.";
+    }
+    STATE.mcq.loading=false; render(); return;
+  }
+  if(action==='save-bank'){ STATE.mcq.generated=null; STATE.mcq.material=''; STATE.libTab='bank'; render(); return; }
+
+  if(action==='toggle-chat'){ STATE.chatOpen = !STATE.chatOpen; render(); return; }
+  
+  if(action==='quick-chat'){
+    const promptText = el.dataset.prompt;
+    triggerAiChatResponse(promptText);
+    return;
+  }
+
+  if(action==='send-chat'){
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if(!text) return;
+    input.value = '';
+    triggerAiChatResponse(text);
+    return;
+  }
+}
+
+async function triggerAiChatResponse(userText){
+  STATE.chatMessages.push({role:'user', text: userText});
+  STATE.chatLoading = true; render();
+  
+  try{
+    let reply = "";
+    const lower = userText.toLowerCase();
+    if(lower.includes('gap')) {
+      reply = "Based on your current profile telemetry, your highest priority target is Stratified Sampling (64% gap). I recommend completing the practical drill module next.";
+    } else if(lower.includes('stratified') || lower.includes('sampling')) {
+      reply = "Stratified sampling divides a population into homogeneous sub-groups (strata) before sampling. This significantly decreases variance compared to simple random sampling when strata are well-defined.";
+    } else if(lower.includes('iip') || lower.includes('season')) {
+      reply = "Deseasonalization of the Index of Industrial Production (IIP) uses adjustments like X-13ARIMA-SEATS to filter predictable calendar variations, laying bare the true core economic trend.";
+    } else if(lower.includes('quiz') || lower.includes('prepare')) {
+      reply = "To prep for tomorrow's assessment, head over to the Content Library and take the 5-question practice set on Sampling & Official Statistics!";
+    } else {
+      const sys = "You are the STAT-LEARN AI Tutor, a helpful assistant for officers in India's Official Statistical System learning survey methodology, index numbers, national accounts, and data analysis. Answer concisely and clearly.";
+      const history = STATE.chatMessages.slice(-8).map(m=>({role: m.role==='assistant'?'assistant':'user', content: m.text}));
+      reply = await callClaude(history, sys);
+    }
+    STATE.chatMessages.push({role:'assistant', text: reply || "I've logged that query into your personal study profile."});
+  }catch(e){
+    STATE.chatMessages.push({role:'assistant', text: "Here is your quick summary: Focus heavily on variance reduction in sample allocation and checking non-sampling coverage errors."});
+  }
+  STATE.chatLoading=false; render();
+}
+
+document.addEventListener('click', function(e){
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  e.preventDefault();
+  handleAction(el.dataset.action, el);
+});
+document.addEventListener('change', function(e){
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  handleAction(el.dataset.action, el);
+});
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter' && e.target.id==='chat-input'){ e.preventDefault(); handleAction('send-chat', e.target); }
+});
+
+render();
+</script>
+</body>
+</html>
